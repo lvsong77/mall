@@ -2,6 +2,7 @@
   <div class="wrapper">
     <ul class="content">
       <button @click="btnClick">按钮</button>
+      <div @click="divClick">hahaha</div>
       <li>分类列表1</li>
       <li>分类列表2</li>
       <li>分类列表3</li>
@@ -119,7 +120,8 @@
     mounted() {
       this.scroll = new BScroll('.wrapper', {
         probeType: 3,
-        pullUpLoad: true
+        pullUpLoad: true,
+        click: true,
       })
 
       // this.scroll.on('scroll', (position) => {
@@ -135,6 +137,10 @@
     methods: {
       btnClick() {
         console.log(123);
+        
+      },
+      divClick() {
+        console.log(456);
         
       }
     }
