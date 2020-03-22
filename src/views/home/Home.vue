@@ -5,19 +5,24 @@
         购物街
       </div>
     </nav-bar>
+    <tab-control class="tab-control fixed"
+                  :titles="['流行', '新款', '精选']"
+                  @tabClick="tabClick"
+                  ref="tabControl1"
+                  v-show="isTabFixed"/>
     <scroll class="content"
             ref="scroll"
             :probe-type="3"
             @scroll="contentScroll"
             :pull-up-load="true"
             @pullingUp="loadMore">
-      <home-swiper :banners="banners"/>
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
       <tab-control class="tab-control"
                    :titles="['流行', '新款', '精选']"
                    @tabClick="tabClick"
-                   ref="tabControl"/>
+                   ref="tabControl2"/>
       <goods-list :goods="showGoods"/>
     </scroll>  
     <back-top @click.native="backClick" v-show="isShowBackTop"/>
@@ -62,6 +67,7 @@
         currentType: 'pop',
         isShowBackTop: false,
         tabOffsetTop: 0,
+        isTabFixed: false,
       }
     },
     computed: {
@@ -84,10 +90,6 @@
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
-
-      // 2.获取tabControl的offsetTop
-      // 所有的组件都有一个属性$el：用于获取组件中的元素
-      this.tabOffsetTop = this.$ref.tabControl.$el.offsetTop
     },
     methods: {
       /**
@@ -105,15 +107,24 @@
             this.currentType = 'sell'
             break;
         }
+        this.$refs.tabControl1.currentIndex = index
+        this.$refs.tabControl2.currentIndex = index
       },
       backClick() {
         this.$refs.scroll.scrollTo(0, 0)
       },
       contentScroll(position) {
+        // 1.判断BackTop是否显示
         this.isShowBackTop = (-position.y) > 1000
+
+        // 2.决定tabControl是否吸顶(position: fixed)
+        this.isTabFixed = (-position.y) > this.tabOffsetTop
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
+      },
+      swiperImageLoad() {
+        this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
       },
       /**
        * 网络请求相关的方法
@@ -139,23 +150,12 @@
 </script>
 
 <style scoped>
-  #home {
-    padding-top: 44px;
-  }
-
   .home-nav {
     background-color: var(--color-tint);
-    color: white;
-    position: fixed;
-    top: 0;
-    width: 100vw;
-    z-index: 1;
+    color: #ffffff;
   }
 
   .tab-control {
-    /* position: sticky;
-    top: 44px;
-    z-index: 1; */
     padding-bottom: 5px;
   }
 
