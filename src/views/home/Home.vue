@@ -5,7 +5,7 @@
         购物街
       </div>
     </nav-bar>
-    <tab-control class="tab-control fixed"
+    <tab-control class="tab-control"
                   :titles="['流行', '新款', '精选']"
                   @tabClick="tabClick"
                   ref="tabControl1"
@@ -19,8 +19,7 @@
       <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad"/>
       <recommend-view :recommends="recommends"/>
       <feature-view/>
-      <tab-control class="tab-control"
-                   :titles="['流行', '新款', '精选']"
+      <tab-control :titles="['流行', '新款', '精选']"
                    @tabClick="tabClick"
                    ref="tabControl2"/>
       <goods-list :goods="showGoods"/>
@@ -68,6 +67,7 @@
         isShowBackTop: false,
         tabOffsetTop: 0,
         isTabFixed: false,
+        saveY: 0,
       }
     },
     computed: {
@@ -90,6 +90,13 @@
       this.$bus.$on('itemImageLoad', () => {
         refresh()
       })
+    },
+    activated() {
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
+      this.$refs.scroll.refresh()
+    },
+    deactivated() {
+      this.saveY = this.$refs.scroll.getScrollY()
     },
     methods: {
       /**
@@ -118,7 +125,7 @@
         this.isShowBackTop = (-position.y) > 1000
 
         // 2.决定tabControl是否吸顶(position: fixed)
-        this.isTabFixed = (-position.y) > this.tabOffsetTop
+        this.isTabFixed = (-position.y) > this.tabOffsetTop - 44
       },
       loadMore() {
         this.getHomeGoods(this.currentType)
@@ -156,11 +163,12 @@
   }
 
   .tab-control {
-    padding-bottom: 5px;
+    position: fixed;
+    z-index: 10;
   }
 
   .content {
     height: calc(100vh - 93px);
-    overflow: hidden
+    overflow: hidden;
   }
 </style>

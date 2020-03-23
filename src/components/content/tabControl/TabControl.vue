@@ -44,6 +44,8 @@
     height: 40px;
     line-height: 40px;
     background-color: #fff;
+    padding-bottom: 5px;
+    width: 100vw;
   }
 
   .tab-control-item {

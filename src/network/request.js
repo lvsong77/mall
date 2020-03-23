@@ -1,9 +1,10 @@
 import axios from 'axios'
+import baseURL from './baseURL'
 
 export function request(config) {
   // 1. 创建axios的实例
   const instance = axios.create({
-    baseURL: 'http://123.207.32.32:8000',
+    baseURL,
     timeout: 5000,
   })
 
