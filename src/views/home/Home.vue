@@ -92,10 +92,12 @@
       })
     },
     activated() {
+      console.log("activated -> activated")
       this.$refs.scroll.scrollTo(0, this.saveY, 0)
       this.$refs.scroll.refresh()
     },
     deactivated() {
+      console.log("deactivated -> deactivated")
       this.saveY = this.$refs.scroll.getScrollY()
     },
     methods: {
