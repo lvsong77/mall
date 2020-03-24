@@ -7,6 +7,8 @@
       <detail-shop-info :shop="shop"/>
       <detail-goods-info :detail-info="detailInfo" @imgLoad="imgLoad"/>
       <detail-param-info :param-info="paramInfo"/>
+      <detail-comment-info :comment-info="commentInfo"/>
+      <goods-list :goods="recommends"/>
     </scroll>
   </div>
 </template>
@@ -18,10 +20,14 @@
   import DetailShopInfo from './childComps/DetailShopInfo'
   import DetailGoodsInfo from './childComps/DetailGoodsInfo'
   import DetailParamInfo from './childComps/DetailParamInfo'
+  import DetailCommentInfo from './childComps/DetailCommentInfo'
 
   import Scroll from 'components/common/scroll/Scroll'
+  import GoodsList from 'components/content/goods/GoodsList'
 
-  import {getDetail, Goods, Shop, GoodsParam} from 'network/detail'
+  import {getDetail, getRecommned, Goods, Shop, GoodsParam} from 'network/detail'
+  import {debounce} from 'common/utils'
+  import {itemListenerMixin} from 'common/mixin';
 
   export default {
     name: 'Detail',
@@ -32,8 +38,11 @@
       DetailShopInfo,
       DetailGoodsInfo,
       DetailParamInfo,
-      Scroll
+      DetailCommentInfo,
+      Scroll,
+      GoodsList,
     },
+    mixin: [itemListenerMixin],
     data() {
       return {
         iid: null,
@@ -42,6 +51,9 @@
         shop: {},
         detailInfo: {},
         paramInfo: {},
+        commentInfo: {},
+        recommends: [],
+        itemImgListener: null
       }
     },
     created() {
@@ -64,7 +76,20 @@
 
         // 5.获取参数信息
         this.paramInfo = new GoodsParam(data.itemParams.info, data.itemParams.rule)
+
+        // 6.取出评论的信息
+        if (data.rate.cRate !== 0) {
+          this.commentInfo = data.rate.list[0]
+        }
+
+        // 3.请求推荐数据
+        getRecommned().then(res => {
+          this.recommends = res.data.list
+        })
       })
+    },
+    destroyed() {
+      this.$bus.off('itemImgLoad', this.itemImgListener)
     },
     methods: {
       imgLoad() {
