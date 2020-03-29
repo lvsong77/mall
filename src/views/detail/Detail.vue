@@ -13,7 +13,8 @@
       <detail-comment-info ref="comment" :comment-info="commentInfo"/>
       <goods-list ref="recommend" :goods="recommends"/>
     </scroll>
-    <detail-bottom-bar/>
+    <detail-bottom-bar @addCart="addToCart"/>
+    <back-top @click.native="backClick" v-show="isShowBackTop"/>
   </div>
 </template>
 
@@ -32,7 +33,8 @@
 
   import {getDetail, getRecommned, Goods, Shop, GoodsParam} from 'network/detail'
   import {debounce} from 'common/utils'
-  import {itemListenerMixin} from 'common/mixin';
+  import {itemListenerMixin, backTopMixin} from 'common/mixin';
+  import {BACKTOP_DISTANCE} from 'common/const';
 
   export default {
     name: 'Detail',
@@ -48,7 +50,7 @@
       Scroll,
       GoodsList,
     },
-    mixins: [itemListenerMixin],
+    mixins: [itemListenerMixin, backTopMixin],
     data() {
       return {
         iid: null,
@@ -61,7 +63,7 @@
         recommends: [],
         themeTopYs: [],
         getThemeTopY: null,
-        currentIndex: 0
+        currentIndex: 0,
       }
     },
     created() {
@@ -134,7 +136,22 @@
             this.$refs.nav.currentIndex = this.currentIndex
           }
         }
+
+        // 3.是否显示回到顶部
+        this.isShowBackTop = (-position.y) > BACKTOP_DISTANCE
       },
+      addToCart() {
+        // 1.获取购物车需要展示的信息
+        const product = {}
+        product.image = this.topImages[0]
+        product.title = this.goods.title
+        product.desc = this.goods.desc
+        product.price = this.goods.realPrice
+        product.iid = this.iid
+        
+        // 2.将商品添加到购物车里
+        this.$store.commit('addCart', product)
+      }
     }
   }
 </script>
@@ -153,6 +170,6 @@
   }
 
   .content {
-    height: calc(100vh - 44px)
+    height: calc(100vh - 44px - 49px)
   }
 </style>
