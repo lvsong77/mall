@@ -36,6 +36,8 @@
   import {itemListenerMixin, backTopMixin} from 'common/mixin';
   import {BACKTOP_DISTANCE} from 'common/const';
 
+  import {mapActions} from 'vuex'
+
   export default {
     name: 'Detail',
     components: {
@@ -113,6 +115,7 @@
       this.$bus.off('itemImgLoad', this.itemImgListener)
     },
     methods: {
+      ...mapActions(['addCart']),
       imgLoad() {
         this.refresh()
         this.getThemeTopY()
@@ -151,7 +154,12 @@
         
         // 2.将商品添加到购物车里
         // this.$store.commit('addCart', product)
-        this.$store.dispatch('addCart', product)
+        // this.$store.dispatch('addCart', product).then(res => {
+        //   console.log(res);
+        // })
+        this.addCart(product).then(res => {
+          this.$toast.show(res, 2000)
+        })
       }
     }
   }
