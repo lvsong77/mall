@@ -112,7 +112,7 @@
       }, 100)
     },
     destroyed() {
-      this.$bus.off('itemImgLoad', this.itemImgListener)
+      this.$bus.$off('itemImgLoad', this.itemImgListener)
     },
     methods: {
       ...mapActions(['addCart']),

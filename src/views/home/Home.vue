@@ -84,8 +84,8 @@
       this.getHomeGoods('sell')
     },
     activated() {
-      this.$refs.scroll.scrollTo(0, this.saveY, 0)
       this.$refs.scroll.refresh()
+      this.$refs.scroll.scrollTo(0, this.saveY, 0)
     },
     deactivated() {
       // 1.保存Y值
